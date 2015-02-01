@@ -1,1 +1,1 @@
-web: target/start -DapplyEvolutions.default=true
+web: target/universal/stage/bin/readable-code -DapplyEvolutions.default=true
