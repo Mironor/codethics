@@ -1,0 +1,24 @@
+{
+  "name": "readable-code",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Mironor/readable-code",
+  "authors": [
+    "Mironor"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "highlight.js": "~7.3.0",
+    "materialize": "~0.95.0"
+  },
+  "devDependencies": {
+    "highlight.js": "~7.3.0",
+    "highlight.js.origin": "~7.0.1"
+  }
+}
