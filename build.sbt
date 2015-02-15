@@ -1,4 +1,4 @@
-name := """readable-code"""
+name := """codethics"""
 
 version := "1.0-SNAPSHOT"
 

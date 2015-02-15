@@ -1,0 +1,39 @@
+<div ng-controller="PollController">
+    <form layout="row">
+        <div flex>
+            <pre hljs source="snippet1"></pre>
+        </div>
+
+        <div layout="column" layout-align="center center" class="middle-vs" flex>
+            <h2>Versus</h2>
+        </div>
+
+        <div flex>
+            <pre hljs source="snippet2"></pre>
+        </div>
+    </form>
+    <div layout="row">
+        <div flex layout="row" layout-align="center">
+            <md-button class="vote-button md-raised md-primary"
+                       ng-class="{'md-warn':snippet2VoteButtonHovered, 'md-green':snippet1VoteButtonHovered }"
+                       ng-mouseover="snippet1VoteButtonHovered = true"
+                       ng-mouseleave="snippet1VoteButtonHovered = false"
+                       ng-click="voteSnippet1()">
+
+                <span ng-hide="snippet2VoteButtonHovered">Readable</span>
+                <span ng-show="snippet2VoteButtonHovered">Not readable</span>
+            </md-button>
+        </div>
+        <div layout="column" layout-align="center center" class="middle-vs" flex>
+        </div>
+        <div flex layout="row" layout-align="center">
+            <md-button class="vote-button md-raised md-primary" ng-class="{'md-warn':snippet1VoteButtonHovered}"
+                       ng-mouseover="snippet2VoteButtonHovered = true"
+                       ng-mouseleave="snippet2VoteButtonHovered = false"
+                       ng-click="voteSnippet2()">
+                <span ng-hide="snippet1VoteButtonHovered">Readable</span>
+                <span ng-show="snippet1VoteButtonHovered">Not readable</span>
+            </md-button>
+        </div>
+    </div>
+</div>

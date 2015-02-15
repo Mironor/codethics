@@ -1,34 +1,45 @@
-@(error: String)
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Codethics</title>
 
-    @main("Codethics") {
-        <nav class="light-blue lighten-1" role="navigation">
-            <div class="container">
-                <div class="nav-wrapper">
-                    <a id="logo-container" href="#" class="brand-logo">Codethics</a>
+        <meta charset="utf-8">
+        <base href="/">
+
+        <link rel="stylesheet" media="screen,projection" href="@routes.Assets.at("stylesheets/angular-material.min.css")">
+        <link rel="stylesheet" media="screen,projection" href="@routes.Assets.at("stylesheets/main.css")">
+
+        <link rel="stylesheet" media="screen,projection" href="@routes.Assets.at("stylesheets/hightlight-default.css")">
+        <link rel="stylesheet" media="screen,projection" href="@routes.Assets.at("stylesheets/tomorrow-night-eighties.min.css")">
+
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+
+        <script>
+        // path to js may vary, this way we will inject it in the application
+        window.pathToApp = "/assets/javascripts/app/" ;
+        </script>
+
+
+        <script src="@routes.Assets.at("javascripts/vendor.js")"></script>
+
+        <script src="@routes.Assets.at("javascripts/app/app.js")"></script>
+
+        <script src="@routes.Assets.at("javascripts/app/common/constants.js")"></script>
+
+        <script src="@routes.Assets.at("javascripts/app/modules/index/index.js")"></script>
+        <script src="@routes.Assets.at("javascripts/app/modules/poll/poll.js")"></script>
+        <script src="@routes.Assets.at("javascripts/app/modules/result/result.js")"></script>
+    </head>
+    <body ng-app="etcs" >
+        <div class="container-main" layout-fill>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h3><span>Codethics</span></h3>
                 </div>
-            </div>
-        </nav>
+            </md-toolbar>
+            <md-content class="md-padding content" ui-view>
 
-
-        <div id="main" class="container">
-            <div class="row center"><span class="red-text text-lighten-2">@error</span></div>
-            <form action="/submit" method="POST">
-                <div class="row">
-                    <div class="input-field col s5">
-                        <textarea class="materialize-textarea" name="snippet1" id="snippet1-textarea"></textarea>
-                        <label for="snippet1-textarea">Enter snippet 1</label>
-                    </div>
-                    <div class="center valign-wrapper col s2"><h3 class="valign blue-text text-lighten-3"> Vs. </h3></div>
-                    <div class="input-field col s5">
-                        <textarea class="materialize-textarea" name="snippet2" id="snippet2-textarea"></textarea>
-                        <label for="snippet2-textarea"l>Enter snippet 2</label>
-                    </div>
-                </div>
-
-                <div class="row center">
-                    <button class="btn waves-effect waves-light blue lighten-1">Submit</button>
-                </div>
-            </form>
-
+            </md-content>
         </div>
-    }
+    </body>
+</html>

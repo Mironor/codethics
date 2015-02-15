@@ -2,8 +2,9 @@ package controllers
 
 import daos.DBTableDefinitions.SnippetSubmition
 import daos.SnippetDAO
-import play.api.data._
-import play.api.data.Forms._
+import play.api.libs.json.Reads
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 import play.api.mvc._
 
 import scala.annotation.tailrec
@@ -13,33 +14,57 @@ object Application extends Controller {
 
   case class SubmitForm(snippet1: String, snippet2: String)
 
-  val submitForm = Form(
-    mapping(
-      "snippet1" -> nonEmptyText,
-      "snippet2" -> nonEmptyText
-    )(SubmitForm.apply)(SubmitForm.unapply)
-  )
+  implicit val snippetFormSubmitionReads: Reads[(String, String)] = (
+    (__ \ "snippet1").read[String] and
+      (__ \ "snippet2").read[String]
+    ).tupled
 
   def index = Action { implicit request =>
-    Ok(views.html.index(""))
+    Ok(views.html.index())
   }
 
-  def token(token: String) = Action { implicit request =>
-    SnippetDAO.findByToken(token) match {
-      case Some(snippetSubmition) => Ok(views.html.poll(token, snippetSubmition.snippet1, snippetSubmition.snippet2))
-      case None => Ok(views.html.index("The requested snippets were not found"))
+  def indexProxy(token: String) = index
+
+  def submit = Action(BodyParsers.parse.json) { implicit request =>
+    request.body.validate[(String, String)].map {
+      case (snippet1: String, snippet2: String) =>
+        val token = generateToken()
+        val snippet = SnippetSubmition(None, token, snippet1, 0, snippet2, 0)
+
+        SnippetDAO.insert(snippet)
+
+        Ok(Json.obj("token" -> token))
+    }.recoverTotal {
+      error => BadRequest(Json.obj(
+        "fields" -> JsError.toFlatJson(error)
+      ))
     }
   }
 
-  def tokenDone(token: String) = Action { implicit request =>
+  def poll(token: String) = Action { implicit request =>
     SnippetDAO.findByToken(token) match {
-      case Some(snippetSubmition) => Ok(views.html.poll_done(
-        snippetSubmition.snippet1,
-        snippetSubmition.snippet1Votes,
-        snippetSubmition.snippet2,
-        snippetSubmition.snippet2Votes
+      case Some(snippetSubmition) => Ok(Json.obj(
+        "token" -> snippetSubmition.token,
+        "snippet1" -> snippetSubmition.snippet1,
+        "snippet2" -> snippetSubmition.snippet2
       ))
-      case None => Ok(views.html.index("The requested snippets were not found"))
+      case None => Ok(Json.obj(
+        "error" -> 404
+      ))
+    }
+  }
+
+  def result(token: String) = Action { implicit request =>
+    SnippetDAO.findByToken(token) match {
+      case Some(snippetSubmition) => Ok(Json.obj(
+        "snippet1" -> snippetSubmition.snippet1,
+        "snippet1Votes" -> snippetSubmition.snippet1Votes,
+        "snippet2" -> snippetSubmition.snippet2,
+        "snippet2Votes" -> snippetSubmition.snippet2Votes
+      ))
+      case None => Ok(Json.obj(
+        "error" -> 404
+      ))
     }
   }
 
@@ -47,8 +72,12 @@ object Application extends Controller {
     SnippetDAO.findByToken(token) match {
       case Some(snippetSubmition) =>
         SnippetDAO.update(snippetSubmition.copy(snippet1Votes = snippetSubmition.snippet1Votes + 1))
-        Redirect(routes.Application.tokenDone(token))
-      case None => Ok(views.html.index("The requested snippets were not found"))
+        Ok(Json.obj(
+          "token" -> token
+        ))
+      case None => Ok(Json.obj(
+        "error" -> 404
+      ))
     }
   }
 
@@ -56,24 +85,15 @@ object Application extends Controller {
     SnippetDAO.findByToken(token) match {
       case Some(snippetSubmition) =>
         SnippetDAO.update(snippetSubmition.copy(snippet2Votes = snippetSubmition.snippet2Votes + 1))
-        Redirect(routes.Application.tokenDone(token))
-      case None => Ok(views.html.index("The requested snippets were not found"))
+        Ok(Json.obj(
+          "token" -> token
+        ))
+      case None => Ok(Json.obj(
+        "error" -> 404
+      ))
     }
   }
 
-  def submit = Action { implicit request =>
-    submitForm.bindFromRequest.fold({
-      formWithErrors => Ok(views.html.index("Please fill both of the snippets"))
-    }, {
-      submitForm =>
-        val token = generateToken()
-        val snippet = SnippetSubmition(None, token, submitForm.snippet1, 0, submitForm.snippet2, 0)
-
-        SnippetDAO.insert(snippet)
-
-        Redirect(routes.Application.token(token))
-    })
-  }
 
   @tailrec
   private def generateToken(): String = {

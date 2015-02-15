@@ -1,0 +1,20 @@
+<div ng-controller="IndexController">
+    <form layout="row">
+        <md-input-container flex>
+            <label>Enter snippet 1</label>
+            <textarea rows="8" columns="1" ng-model="snippet1"></textarea>
+        </md-input-container>
+
+        <div layout="column" layout-align="center center" class="middle-vs" flex>
+            <h2>Versus</h2>
+        </div>
+
+        <md-input-container flex>
+            <label>Enter snippet 2</label>
+            <textarea rows="8" columns="1" ng-model="snippet2"></textarea>
+        </md-input-container>
+    </form>
+    <div layout="row" layout-align="center">
+        <md-button class="submit-button md-raised md-primary" ng-click="submitSnippets()">Submit</md-button>
+    </div>
+</div>
